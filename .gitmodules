@@ -15,4 +15,4 @@
 	branch = dsp-real-support
 [submodule "dsptools"]
 	path = dsptools
-	url = http://github.com/ucb-bar/dsptools.git
+	url = git@github.com:ucb-bar/dsptools.git
