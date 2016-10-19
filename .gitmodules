@@ -1,17 +1,17 @@
 [submodule "firrtl"]
 	path = firrtl
-	url = http://github.com/ucb-bar/firrtl.git
+	url = git@github.com:ucb-bar/firrtl.git
 	branch = add-fixed-point-type
 [submodule "chisel3"]
 	path = chisel3
-	url = http://github.com/ucb-bar/chisel3.git
+	url = git@github.com:ucb-bar/chisel3.git
 	branch = dsp-support-1
 [submodule "chisel-testers"]
 	path = chisel-testers
-	url = http://github.com/ucb-bar/chisel-testers.git
+	url = git@github.com:ucb-bar/chisel-testers.git
 [submodule "firrtl-interpreter"]
 	path = firrtl-interpreter
-	url = http://github.com/ucb-bar/firrtl-interpreter.git
+	url = git@github.com:ucb-bar/firrtl-interpreter.git
 	branch = dsp-real-support
 [submodule "dsptools"]
 	path = dsptools
