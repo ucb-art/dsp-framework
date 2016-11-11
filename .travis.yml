@@ -1,0 +1,10 @@
+git:
+  submodules: true
+language: scala
+# run on new infrastructure
+sudo: false
+
+script:
+  - ./update.bash
+  - cd dsptools; sbt test
+
