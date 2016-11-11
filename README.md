@@ -1,4 +1,4 @@
-# DSP Framework
+# DSP Framework [![Build Status](https://travis-ci.org/ucb-art/dsp-framework.svg?branch=travis)](https://travis-ci.org/ucb-art/dsp-framework)
 
 This project tracks versions of the various dependencies for developing DSP blocks in chisel.
 
