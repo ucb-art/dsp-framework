@@ -24,13 +24,13 @@ $(rocketchip_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)) $(firrtl_stamp
 $(firrtl_stamp):
 	cd $(framework_dir)/rocket-chip/firrtl && $(SBT) publish-local && $(SBT) assembly
 	mkdir -p ${lib_dir}
-	find ${ivy_dir}/local -type f -name "*.jar" | xargs cp -t ${lib_dir}
+	find ${ivy_dir}/local -type f -name "*.jar" | xargs -I@ cp @ ${lib_dir}/
 	touch $(firrtl_stamp)
 
 $(chisel3_stamp): $(firrtl_stamp)
 	cd $(framework_dir)/rocket-chip/chisel3 && $(SBT) publish-local
 	mkdir -p ${lib_dir}
-	find ${ivy_dir}/local -type f -name "*.jar" | xargs cp -t ${lib_dir}
+	find ${ivy_dir}/local -type f -name "*.jar" | xargs -I@ cp @ ${lib_dir}/
 	touch $(chisel3_stamp)
 
 -include $(framework_dir)/Makefrag.pkgs
