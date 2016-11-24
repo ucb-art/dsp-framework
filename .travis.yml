@@ -1,5 +1,6 @@
-git:
-  submodules: true
+# [stevo]: this is done in update.bash; don't want all of riscv-tools...
+#git:
+#  submodules: true
 language: scala
 # run on new infrastructure
 sudo: false
