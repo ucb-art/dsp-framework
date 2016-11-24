@@ -10,7 +10,7 @@
 	url = https://github.com/ucb-bar/dsptools.git
 [submodule "rocket-chip"]
 	path = rocket-chip
-	url = git@github.com:ucb-bar/rocket-chip.git
+	url = https://github.com/ucb-bar/rocket-chip.git
 [submodule "testchipip"]
 	path = testchipip
-	url = git@github.com:ucb-bar/testchipip.git
+	url = https://github.com/ucb-bar/testchipip.git
