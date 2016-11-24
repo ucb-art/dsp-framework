@@ -1,3 +1,3 @@
 #!/bin/bash
 
-export PATH=$PWD/firrtl/utils/bin:$PATH
+export PATH=$PWD/rocket-chip/firrtl/utils/bin:$PATH

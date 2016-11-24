@@ -1,1 +1,4 @@
 target/
+/lib
+/.ivy2
+Makefrag.pkgs

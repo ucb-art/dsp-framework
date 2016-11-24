@@ -22,5 +22,6 @@ env:
 
 script:
   - ./update.bash
-  - cd dsptools; sbt test
+  - make
+  - make test
 
