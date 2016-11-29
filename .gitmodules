@@ -13,4 +13,4 @@
 	url = https://github.com/ucb-art/rocket-chip.git
 [submodule "testchipip"]
 	path = testchipip
-	url = https://github.com/ucb-bar/testchipip.git
+	url = https://github.com/grebe/testchipip.git
