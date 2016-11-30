@@ -23,7 +23,8 @@ $(rocketchip_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)) $(firrtl_stamp
 	touch $(rocketchip_stamp)
 
 $(firrtl_stamp):
-	cd $(framework_dir)/rocket-chip/firrtl && $(SBT) publish-local && $(SBT) assembly
+	cd $(framework_dir)/rocket-chip/firrtl && $(SBT) publish-local
+	cd $(framework_dir)/rocket-chip/firrtl && $(SBT) assembly
 	mkdir -p ${lib_dir}
 	find ${ivy_dir}/local -type f -name "*.jar" | xargs -I@ cp @ ${lib_dir}/
 	touch $(firrtl_stamp)
