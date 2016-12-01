@@ -4,7 +4,6 @@
 [submodule "firrtl-interpreter"]
 	path = firrtl-interpreter
 	url = https://github.com/ucb-bar/firrtl-interpreter.git
-	branch = rocket-ready-1
 [submodule "dsptools"]
 	path = dsptools
 	url = https://github.com/ucb-bar/dsptools.git
