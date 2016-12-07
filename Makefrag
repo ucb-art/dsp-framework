@@ -10,6 +10,7 @@ chisel3_stamp=$(lib_dir)/chisel3.stamp
 firrtl_stamp=$(lib_dir)/firrtl.stamp
 SBT ?= java -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Xmx2G -Xss128M -jar $(ROCKETCHIP_DIR)/sbt-launch.jar -Dsbt.ivy.home="${ivy_dir}"
 extra_stamps = $(addprefix $(lib_dir)/,$(addsuffix .stamp, $(notdir $(EXTRA_PACKAGES))))
+all_stamps = $(rocketchip_stamp) $(chisel3_stamp) $(firrtl_stamp) $(extra_stamps)
 
 lookup_scala_srcs = $(shell find $(1)/ -iname "*.scala" 2> /dev/null)
 
