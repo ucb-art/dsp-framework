@@ -3,7 +3,7 @@ ivy_dir ?= $(base_dir)/.ivy2
 
 ROCKETCHIP_DIR=$(framework_dir)/rocket-chip
 #EXTRA_PACKAGES=firrtl-interpreter chisel-testers dsptools testchipip
-EXTRA_PACKAGES=firrtl-interpreter testchipip chisel-testers dsptools
+EXTRA_PACKAGES=firrtl-interpreter testchipip chisel-testers sam builtin-debugger dsptools
 
 rocketchip_stamp=$(lib_dir)/rocketchip.stamp
 chisel3_stamp=$(lib_dir)/chisel3.stamp
