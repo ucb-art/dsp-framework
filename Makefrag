@@ -1,0 +1,45 @@
+lib_dir=$(base_dir)/lib
+ivy_dir ?= $(base_dir)/.ivy2
+
+ROCKETCHIP_DIR=$(framework_dir)/rocket-chip
+EXTRA_PACKAGES=firrtl-interpreter testchipip chisel-testers dsptools
+
+rocketchip_stamp=$(lib_dir)/rocketchip.stamp
+chisel3_stamp=$(lib_dir)/chisel3.stamp
+firrtl_stamp=$(lib_dir)/firrtl.stamp
+SBT ?= java -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Xmx2G -Xss128M -jar $(ROCKETCHIP_DIR)/sbt-launch.jar -Dsbt.ivy.home="${ivy_dir}"
+extra_stamps := $(addprefix $(lib_dir)/,$(addsuffix .stamp, $(notdir $(EXTRA_PACKAGES)))) $(extra_stamps)
+all_stamps := $(rocketchip_stamp) $(chisel3_stamp) $(firrtl_stamp) $(extra_stamps) $(all_stamps)
+
+lookup_scala_srcs = $(shell find $(1)/ -iname "*.scala" 2> /dev/null)
+
+libs: $(firrtl_stamp) $(chisel3_stamp) $(rocketchip_stamp) $(extra_stamps)
+
+$(rocketchip_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)) $(firrtl_stamp) $(chisel3_stamp)
+	cd $(ROCKETCHIP_DIR) && $(SBT) publish-local
+	cd $(ROCKETCHIP_DIR) && $(SBT) pack
+	mkdir -p $(lib_dir)
+	cp $(ROCKETCHIP_DIR)/target/pack/lib/*.jar $(lib_dir)
+	touch $(rocketchip_stamp)
+
+$(firrtl_stamp):
+	cd $(framework_dir)/rocket-chip/firrtl && $(SBT) publish-local
+	cd $(framework_dir)/rocket-chip/firrtl && $(SBT) assembly
+	mkdir -p ${lib_dir}
+	touch $(firrtl_stamp)
+
+$(chisel3_stamp): $(firrtl_stamp)
+	cd $(framework_dir)/rocket-chip/chisel3 && $(SBT) publish-local
+	mkdir -p ${lib_dir}
+	touch $(chisel3_stamp)
+
+-include $(framework_dir)/Makefrag.pkgs
+
+$(framework_dir)/Makefrag.pkgs: $(framework_dir)/generate-pkg-mk.sh $(framework_dir)/Makefrag
+	bash $(framework_dir)/generate-pkg-mk.sh $(lib_dir) $(EXTRA_PACKAGES) > $@
+
+test:
+	cd dsptools ; $(SBT) test
+
+clean:
+	rm -rf $(lib_dir) $(ivy_dir)/local
