@@ -38,7 +38,7 @@ $(chisel3_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/chisel3) $(firrtl_
 $(framework_dir)/Makefrag.pkgs: $(framework_dir)/generate-pkg-mk.sh $(framework_dir)/Makefrag
 	bash $(framework_dir)/generate-pkg-mk.sh $(lib_dir) $(EXTRA_PACKAGES) > $@
 
-test:
+dsptest:
 	cd dsptools ; $(SBT) test
 
 clean:
