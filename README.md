@@ -47,6 +47,7 @@ The framework includes the following subrepos.
 
 This gives your project access to rocket-chip's features, such as junctions and the GeneratorApp.
 It also uses the versions of chisel3 and firrtl that are compatible with this version of rocket-chip, so if you build your project in a rocket-chip context, you will get version matching by default.
+Note that we currently have a forked version of the ucb-bar rocket-chip, allowing us to independently update chisel3 and firrtl.
 
 ### firrtl-interpreter
 
