@@ -2,7 +2,7 @@ lib_dir=$(base_dir)/lib
 ivy_dir ?= $(base_dir)/.ivy2
 
 ROCKETCHIP_DIR=$(framework_dir)/rocket-chip
-FRAMEWORK_PACKAGES=firrtl-interpreter testchipip chisel-testers dsptools
+FRAMEWORK_PACKAGES=firrtl-interpreter testchipip chisel-testers dsptools rocket-dsp-utils
 
 rocketchip_stamp=$(lib_dir)/rocketchip.stamp
 chisel3_stamp=$(lib_dir)/chisel3.stamp
@@ -39,7 +39,7 @@ $(framework_dir)/Makefrag.pkgs: $(framework_dir)/generate-pkg-mk.sh $(framework_
 	bash $(framework_dir)/generate-pkg-mk.sh $(lib_dir) $(FRAMEWORK_PACKAGES) > $@
 
 dsptest:
-	cd dsptools ; $(SBT) test
+	cd $(framework_dir)/dsptools ; $(SBT) test
 
 clean:
 	rm -rf $(lib_dir) $(ivy_dir)/local

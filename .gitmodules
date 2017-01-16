@@ -13,3 +13,6 @@
 [submodule "testchipip"]
 	path = testchipip
 	url = https://github.com/grebe/testchipip.git
+[submodule "rocket-dsp-utils"]
+	path = rocket-dsp-utils
+	url = https://github.com/ucb-art/rocket-dsp-utils.git

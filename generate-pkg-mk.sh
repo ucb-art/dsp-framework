@@ -13,7 +13,6 @@ ${lib_dir}/$(basename ${pkg}).stamp: \$(call lookup_scala_srcs, ${pkg_dir}) \$(r
 	rm -f ${pkg_dir}/lib
 	ln -s ${lib_dir} ${pkg_dir}/lib
 	cd ${pkg_dir} && \$(SBT) publish-local
-	cp ${pkg_dir}/target/scala-2.11/*.jar ${lib_dir}
 	touch \$@
 MAKE
 done
