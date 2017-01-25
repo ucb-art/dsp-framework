@@ -22,13 +22,13 @@ $(rocketchip_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)) $(firrtl_stamp
 	cp $(ROCKETCHIP_DIR)/target/pack/lib/*.jar $(lib_dir)
 	touch $(rocketchip_stamp)
 
-$(firrtl_stamp):
+$(firrtl_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/firrtl/src)
 	cd $(ROCKETCHIP_DIR)/firrtl && $(SBT) publish-local
 	cd $(ROCKETCHIP_DIR)/firrtl && $(SBT) assembly
 	mkdir -p ${lib_dir}
 	touch $(firrtl_stamp)
 
-$(chisel3_stamp): $(firrtl_stamp) 
+$(chisel3_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/chisel3/src) $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/chisel3/chiselFrontend) $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/chisel3/coreMacros) $(firrtl_stamp) 
 	cd $(ROCKETCHIP_DIR)/chisel3 && $(SBT) publish-local
 	mkdir -p ${lib_dir}
 	touch $(chisel3_stamp)
