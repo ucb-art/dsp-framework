@@ -3,11 +3,12 @@ ivy_dir ?= $(base_dir)/.ivy2
 
 ROCKETCHIP_DIR=$(framework_dir)/rocket-chip
 FRAMEWORK_PACKAGES=firrtl-interpreter testchipip chisel-testers dsptools rocket-dsp-utils
+export ROCKETCHIP_ADDONS ?= hwacha
 
 rocketchip_stamp=$(lib_dir)/rocketchip.stamp
 chisel3_stamp=$(lib_dir)/chisel3.stamp
 firrtl_stamp=$(lib_dir)/firrtl.stamp
-SBT ?= java -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Xmx2G -Xss128M -jar $(ROCKETCHIP_DIR)/sbt-launch.jar -Dsbt.ivy.home="${ivy_dir}"
+SBT ?= java -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Xmx8G -Xss128M -jar $(ROCKETCHIP_DIR)/sbt-launch.jar -Dsbt.ivy.home="${ivy_dir}"
 framework_stamps := $(addprefix $(lib_dir)/,$(addsuffix .stamp, $(notdir $(FRAMEWORK_PACKAGES)))) $(framework_stamps)
 all_stamps := $(firrtl_stamp) $(chisel3_stamp) $(rocketchip_stamp) $(framework_stamps) $(base_stamps)
 
