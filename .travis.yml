@@ -1,6 +1,6 @@
 # [stevo]: this is done in update.bash; don't want all of riscv-tools...
 git:
-  depth: 1
+  submodules: false
 language: scala
 # run on new infrastructure
 sudo: false
