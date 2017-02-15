@@ -23,6 +23,7 @@ env:
 
 script:
   - ./update.bash
+  - export ROCKETCHIP_ADDONS=
   - make
   - make dsptest
 
