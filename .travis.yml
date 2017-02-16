@@ -1,8 +1,8 @@
-# [stevo]: this is done in update.bash; don't want all of riscv-tools...
-#git:
-#  submodules: true
+git:
+  submodules: false
+
 language: scala
-# run on new infrastructure
+
 sudo: false
 
 install:
@@ -22,7 +22,8 @@ env:
     PATH=$PATH:$VERILATOR_ROOT/bin:$TRAVIS_BUILD_DIR/utils/bin
 
 script:
-  - ./update.bash
+  - ./update.bash no_hwacha
+  - export ROCKETCHIP_ADDONS=
   - make
   - make dsptest
 
