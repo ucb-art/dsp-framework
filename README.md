@@ -7,9 +7,10 @@ This project tracks versions of the various dependencies for developing DSP bloc
 Running `./update.bash` will check out the correct versions of the various git submodules.
 Running `make libs` will build and publish-local them in a local .ivy2 folder.
 Running `sbt -Dsbt.ivy.home=path/to/ivy2` in any other scala project will allow you to include the various projects in this repo.
-Running `make test` will run the dsptools tests.
+Running `make dsptest` will run the dsptools tests.
+Running `make clean` removes the lib directory and the .ivy2 local directory.
 
-This project will not install verilator for you and will not permanently put firrtl on your path- you should do that yourself.
+This project will not install verilator for you and will not permanently put firrtl on your path--you should do that yourself.
 See the [firrtl project README](https://github.com/ucb-bar/firrtl) for details.
 
 ## Use
