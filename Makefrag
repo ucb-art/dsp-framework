@@ -5,12 +5,14 @@ ROCKETCHIP_DIR=$(framework_dir)/rocket-chip
 FRAMEWORK_PACKAGES=firrtl-interpreter testchipip chisel-testers dsptools builtin-debugger rocket-dsp-utils 
 export ROCKETCHIP_ADDONS ?= hwacha
 
+ipxact_jar=ipxact_2.11-1.0.jar
+ipxact_stamp=$(lib_dir)/$(ipxact_jar)
 rocketchip_stamp=$(lib_dir)/rocketchip.stamp
 chisel3_stamp=$(lib_dir)/chisel3.stamp
 firrtl_stamp=$(lib_dir)/firrtl.stamp
 SBT ?= java -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Xmx8G -Xss128M -jar $(ROCKETCHIP_DIR)/sbt-launch.jar -Dsbt.ivy.home="${ivy_dir}"
-framework_stamps := $(addprefix $(lib_dir)/,$(addsuffix .stamp, $(notdir $(FRAMEWORK_PACKAGES)))) $(framework_stamps)
-all_stamps := $(firrtl_stamp) $(chisel3_stamp) $(rocketchip_stamp) $(framework_stamps) $(base_stamps)
+framework_stamps := $(addprefix $(lib_dir)/,$(addsuffix .stamp, $(notdir $(FRAMEWORK_PACKAGES)))) $(ipxact_stamp) $(framework_stamps) 
+all_stamps := $(firrtl_stamp) $(chisel3_stamp) $(rocketchip_stamp) $(framework_stamps) $(base_stamps) 
 
 lookup_scala_srcs = $(shell find $(1)/ -iname "*.scala" 2> /dev/null)
 
@@ -33,6 +35,9 @@ $(chisel3_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/chisel3/src) $(cal
 	cd $(ROCKETCHIP_DIR)/chisel3 && $(SBT) publish-local
 	mkdir -p ${lib_dir}
 	touch $(chisel3_stamp)
+
+$(ipxact_stamp): $(framework_dir)/$(ipxact_jar)
+	cp $(framework_dir)/$(ipxact_jar) $(ipxact_stamp)
 
 -include $(framework_dir)/Makefrag.pkgs
 
