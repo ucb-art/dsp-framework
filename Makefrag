@@ -2,7 +2,7 @@ lib_dir=$(base_dir)/lib
 ivy_dir ?= $(base_dir)/.ivy2
 
 ROCKETCHIP_DIR=$(framework_dir)/rocket-chip
-FRAMEWORK_PACKAGES=firrtl-interpreter testchipip chisel-testers dsptools builtin-debugger rocket-dsp-utils 
+FRAMEWORK_PACKAGES=firrtl-interpreter testchipip chisel-testers barstools dsptools builtin-debugger rocket-dsp-utils 
 export ROCKETCHIP_ADDONS ?= hwacha
 
 ipxact_jar=ipxact_2.11-1.0.jar
