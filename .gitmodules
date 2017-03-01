@@ -19,3 +19,6 @@
 [submodule "builtin-debugger"]
 	path = builtin-debugger
 	url = https://github.com/ucb-art/builtin-debugger.git
+[submodule "barstools"]
+	path = barstools
+	url = https://github.com/ucb-bar/barstools.git
