@@ -46,6 +46,3 @@ $(framework_dir)/Makefrag.pkgs: $(framework_dir)/generate-pkg-mk.sh $(framework_
 
 dsptest:
 	cd $(framework_dir)/dsptools ; $(SBT) test
-
-clean:
-	rm -rf $(lib_dir) $(ivy_dir)/local
