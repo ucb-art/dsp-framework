@@ -2,11 +2,12 @@
 
 base_dir="\$(base_dir)"
 lib_dir="\$(lib_dir)"
+framework_dir="\$(framework_dir)"
 shift
 
 for pkg in $@
 do
-    pkg_dir="${base_dir}/${pkg}"
+    pkg_dir="${framework_dir}/${pkg}"
     cat <<MAKE
 ${lib_dir}/$(basename ${pkg}).stamp: \$(call lookup_scala_srcs, ${pkg_dir}) \$(rocketchip_stamp)
 	mkdir -p ${lib_dir}
