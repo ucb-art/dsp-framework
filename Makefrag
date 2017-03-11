@@ -1,29 +1,50 @@
 lib_dir=$(base_dir)/lib
 ivy_dir ?= $(base_dir)/.ivy2
 
+default: $(libs)
+
 ROCKETCHIP_DIR=$(framework_dir)/rocket-chip
-FRAMEWORK_PACKAGES=firrtl-interpreter testchipip chisel-testers barstools dsptools builtin-debugger rocket-dsp-utils 
 export ROCKETCHIP_ADDONS ?= hwacha
 
+SBT ?= java -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Xmx8G -Xss128M -jar $(ROCKETCHIP_DIR)/sbt-launch.jar -Dsbt.ivy.home="${ivy_dir}"
+
+
+
+
+#####################################################
+# stamps and other setup
+#####################################################
+
+firrtl_stamp=$(lib_dir)/firrtl.stamp
+chisel3_stamp=$(lib_dir)/chisel3.stamp
+firrtl_interpreter_stamp=$(lib_dir)/firrtl-interpreter.stamp
+chisel_testers_stamp=$(lib_dir)/chisel-testers.stamp
+rocketchip_stamp=$(lib_dir)/rocketchip.stamp
+testchipip_stamp=$(lib_dir)/testchipip.stamp
+barstools_stamp=$(lib_dir)/barstools.stamp
+dsptools_stamp=$(lib_dir)/dsptools.stamp
+builtin_debugger_stamp=$(lib_dir)/builtin-debugger.stamp
 ipxact_jar=ipxact_2.11-1.0.jar
 ipxact_stamp=$(lib_dir)/$(ipxact_jar)
-rocketchip_stamp=$(lib_dir)/rocketchip.stamp
-chisel3_stamp=$(lib_dir)/chisel3.stamp
-firrtl_stamp=$(lib_dir)/firrtl.stamp
-SBT ?= java -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Xmx8G -Xss128M -jar $(ROCKETCHIP_DIR)/sbt-launch.jar -Dsbt.ivy.home="${ivy_dir}"
-framework_stamps := $(addprefix $(lib_dir)/,$(addsuffix .stamp, $(notdir $(FRAMEWORK_PACKAGES)))) $(ipxact_stamp) $(framework_stamps) 
-all_stamps := $(firrtl_stamp) $(chisel3_stamp) $(rocketchip_stamp) $(framework_stamps) $(base_stamps) 
+rocket_dsp_utils_stamp=$(lib_dir)/rocket-dsp-utils.stamp
+
+all_stamps := $(firrtl_stamp) $(chisel3_stamp) $(firrtl_interpreter_stamp) $(chisel_testers_stamp) $(rocketchip_stamp) $(testchipip_stamp) $(barstools_stamp) $(dsptools_stamp) $(builtin_debugger_stamp) $(ipxact_stamp) $(rocket_dsp_utils_stamp)
 
 lookup_scala_srcs = $(shell find $(1)/ -iname "*.scala" 2> /dev/null)
 
 libs: $(all_stamps)
 
-$(rocketchip_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)) $(firrtl_stamp) $(chisel3_stamp)
-	cd $(ROCKETCHIP_DIR) && $(SBT) publish-local
-	cd $(ROCKETCHIP_DIR) && $(SBT) pack
-	mkdir -p $(lib_dir)
-	cp $(ROCKETCHIP_DIR)/target/pack/lib/*.jar $(lib_dir)
-	touch $(rocketchip_stamp)
+
+
+
+#####################################################
+# [stevo]: set up dependencies correctly so you can
+#          run make -j <n> to make stuff in parallel
+#####################################################
+
+#####################################################
+# base packages
+#####################################################
 
 $(firrtl_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/firrtl/src)
 	cd $(ROCKETCHIP_DIR)/firrtl && $(SBT) publish-local
@@ -36,13 +57,81 @@ $(chisel3_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/chisel3/src) $(cal
 	mkdir -p ${lib_dir}
 	touch $(chisel3_stamp)
 
+$(firrtl_interpreter_stamp): $(call lookup_scala_srcs, $(framework_dir)/firrtl-interpreter) $(firrtl_stamp)
+	mkdir -p $(lib_dir)
+	rm -rf $(framework_dir)/firrtl-interpreter/lib
+	ln -s $(base_dir)/lib $(framework_dir)/firrtl-interpreter/lib
+	cd $(framework_dir)/firrtl-interpreter && $(SBT) publish-local
+	touch $@
+
+$(chisel_testers_stamp): $(call lookup_scala_srcs, $(framework_dir)/chisel-testers) $(firrtl_stamp) $(chisel3_stamp) $(firrtl_interpreter_stamp)
+	mkdir -p $(lib_dir)
+	rm -rf $(framework_dir)/chisel-testers/lib
+	ln -s $(base_dir)/lib $(framework_dir)/chisel-testers/lib
+	cd $(framework_dir)/chisel-testers && $(SBT) publish-local
+	touch $@
+
+$(rocketchip_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)) $(firrtl_stamp) $(chisel3_stamp) $(firrtl_interpreter_stamp) $(chisel_testers_stamp)
+	cd $(ROCKETCHIP_DIR) && $(SBT) publish-local
+	cd $(ROCKETCHIP_DIR) && $(SBT) pack
+	mkdir -p $(lib_dir)
+	cp $(ROCKETCHIP_DIR)/target/pack/lib/*.jar $(lib_dir)
+	touch $(rocketchip_stamp)
+
+
+#####################################################
+# extra packages
+#####################################################
+
+$(testchipip_stamp): $(call lookup_scala_srcs, $(framework_dir)/testchipip) $(rocketchip_stamp)
+	mkdir -p $(lib_dir)
+	rm -rf $(framework_dir)/testchipip/lib
+	ln -s $(base_dir)/lib $(framework_dir)/testchipip/lib
+	cd $(framework_dir)/testchipip && $(SBT) publish-local
+	touch $@
+
+$(barstools_stamp): $(call lookup_scala_srcs, $(framework_dir)/barstools) $(rocketchip_stamp)
+	mkdir -p $(lib_dir)
+	rm -rf $(framework_dir)/barstools/lib
+	ln -s $(base_dir)/lib $(framework_dir)/barstools/lib
+	cd $(framework_dir)/barstools && $(SBT) publish-local
+	touch $@
+
+$(dsptools_stamp): $(call lookup_scala_srcs, $(framework_dir)/dsptools) $(rocketchip_stamp)
+	mkdir -p $(lib_dir)
+	rm -rf $(framework_dir)/dsptools/lib
+	ln -s $(base_dir)/lib $(framework_dir)/dsptools/lib
+	cd $(framework_dir)/dsptools && $(SBT) publish-local
+	touch $@
+
+$(builtin_debugger_stamp): $(call lookup_scala_srcs, $(framework_dir)/builtin-debugger) $(rocketchip_stamp)
+	mkdir -p $(lib_dir)
+	rm -rf $(framework_dir)/builtin-debugger/lib
+	ln -s $(base_dir)/lib $(framework_dir)/builtin-debugger/lib
+	cd $(framework_dir)/builtin-debugger && $(SBT) publish-local
+	touch $@
+
 $(ipxact_stamp): $(framework_dir)/$(ipxact_jar)
+	mkdir -p $(lib_dir)
 	cp $(framework_dir)/$(ipxact_jar) $(ipxact_stamp)
 
--include $(framework_dir)/Makefrag.pkgs
 
-$(framework_dir)/Makefrag.pkgs: $(framework_dir)/generate-pkg-mk.sh $(framework_dir)/Makefrag
-	bash $(framework_dir)/generate-pkg-mk.sh $(lib_dir) $(FRAMEWORK_PACKAGES) > $@
+#####################################################
+# dsp utils depends on everything!
+#####################################################
+
+$(rocket_dsp_utils_stamp): $(call lookup_scala_srcs, $(framework_dir)/rocket-dsp-utils) $(rocketchip_stamp) $(testchipip_stamp) $(barstools_stamp) $(dsptools_stamp) $(builtin_debugger_stamp) $(ipxact_stamp)
+	mkdir -p $(lib_dir)
+	rm -rf $(framework_dir)/rocket-dsp-utils/lib
+	ln -s $(base_dir)/lib $(framework_dir)/rocket-dsp-utils/lib
+	cd $(framework_dir)/rocket-dsp-utils && $(SBT) publish-local
+	touch $@
+
+
+
+#####################################################
+# tests
+#####################################################
 
 dsptest:
 	cd $(framework_dir)/dsptools ; $(SBT) test
