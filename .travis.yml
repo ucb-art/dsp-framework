@@ -26,5 +26,4 @@ script:
   - ./update.bash no_hwacha
   - export ROCKETCHIP_ADDONS=
   - make
-  - make dsptest
 
