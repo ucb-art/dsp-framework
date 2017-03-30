@@ -19,6 +19,7 @@ firrtl_stamp=$(lib_dir)/firrtl.stamp
 chisel3_stamp=$(lib_dir)/chisel3.stamp
 firrtl_interpreter_stamp=$(lib_dir)/firrtl-interpreter.stamp
 chisel_testers_stamp=$(lib_dir)/chisel-testers.stamp
+chisel_jtag_stamp=$(lib_dir)/chisel-jtag.stamp
 rocketchip_stamp=$(lib_dir)/rocketchip.stamp
 testchipip_stamp=$(lib_dir)/testchipip.stamp
 barstools_stamp=$(lib_dir)/barstools.stamp
@@ -71,6 +72,10 @@ $(chisel_testers_stamp): $(call lookup_scala_srcs, $(framework_dir)/chisel-teste
 	cd $(framework_dir)/chisel-testers && $(SBT) publish-local
 	touch $@
 
+$(chisel_jtag_stamp): $(call lookup_scala_srcs, $(framework_dir)/chisel-jtag) $(chisel_testers_stamp)
+	cd $(framework_dir)/chisel-jtag && $(SBT) publish-local
+	touch $@
+
 $(rocketchip_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)) $(firrtl_stamp) $(chisel3_stamp) $(firrtl_interpreter_stamp) $(chisel_testers_stamp)
 	cd $(ROCKETCHIP_DIR) && $(SBT) publish-local
 	cd $(ROCKETCHIP_DIR) && $(SBT) pack
@@ -120,7 +125,7 @@ $(ipxact_stamp): $(framework_dir)/$(ipxact_jar)
 # dsp utils depends on everything!
 #####################################################
 
-$(rocket_dsp_utils_stamp): $(call lookup_scala_srcs, $(framework_dir)/rocket-dsp-utils) $(rocketchip_stamp) $(testchipip_stamp) $(barstools_stamp) $(dsptools_stamp) $(builtin_debugger_stamp) $(ipxact_stamp)
+$(rocket_dsp_utils_stamp): $(call lookup_scala_srcs, $(framework_dir)/rocket-dsp-utils) $(rocketchip_stamp) $(testchipip_stamp) $(barstools_stamp) $(dsptools_stamp) $(builtin_debugger_stamp) $(ipxact_stamp) $(chisel_jtag_stamp)
 	mkdir -p $(lib_dir)
 	rm -rf $(framework_dir)/rocket-dsp-utils/lib
 	ln -s $(base_dir)/lib $(framework_dir)/rocket-dsp-utils/lib
