@@ -1,4 +1,4 @@
-lib_dir=$(base_dir)/lib
+lib_dir ?= $(base_dir)/lib
 ivy_dir ?= $(base_dir)/.ivy2
 
 default: libs
