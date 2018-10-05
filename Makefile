@@ -1,4 +1,4 @@
-base_dir = $(abspath .)
+base_dir = $(abspath ..)
 framework_dir = $(abspath .)
 
 include Makefrag
