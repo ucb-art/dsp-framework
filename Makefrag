@@ -29,8 +29,8 @@ builtin_debugger_stamp=$(lib_dir)/builtin-debugger.stamp
 ipxact_jar=ipxact_2.11-1.0.jar
 ipxact_stamp=$(lib_dir)/$(ipxact_jar)
 
-all_stamps := $(firrtl_stamp) $(chisel3_stamp) $(treadle_stamp) $(firrtl_interpreter_stamp) $(chisel_testers_stamp) $(rocketchip_stamp) $(dsptools_stamp)
-#  $(testchipip_stamp) $(barstools_stamp)
+all_stamps := $(firrtl_stamp) $(chisel3_stamp) $(treadle_stamp) $(firrtl_interpreter_stamp) $(chisel_testers_stamp) $(rocketchip_stamp) $(dsptools_stamp) $(testchipip_stamp)
+# $(barstools_stamp)
 
 lookup_scala_srcs = $(shell find $(1)/ -iname "*.scala" 2> /dev/null)
 
