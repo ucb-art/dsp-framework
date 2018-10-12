@@ -19,3 +19,6 @@
 [submodule "treadle"]
 	path = treadle
 	url = https://github.com/freechipsproject/treadle.git
+[submodule "handlebars.scala"]
+	path = handlebars.scala
+	url = https://github.com/brainps/handlebars.scala.git
