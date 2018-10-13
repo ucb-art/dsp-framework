@@ -93,6 +93,7 @@ $(rocketchip_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)) $(firrtl_stamp
 
 $(handlebars_stamp): $(call lookup_scala_srcs, $(framework_dir)/handlebars.scala)
 	cd $(framework_dir)/handlebars.scala && $(SBT) publishLocal
+	mkdir -p ${lib_dir}
 	touch $@
 
 
