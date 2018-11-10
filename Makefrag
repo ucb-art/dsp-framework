@@ -16,6 +16,7 @@ SBT ?= java -XX:+CMSClassUnloadingEnabled -XX:MaxPermSize=256m -Xmx8G -Xss128M -
 #####################################################
 
 firrtl_stamp=$(lib_dir)/firrtl.stamp
+treadle_stamp=$(lib_dir)/treadle.stamp
 chisel3_stamp=$(lib_dir)/chisel3.stamp
 firrtl_interpreter_stamp=$(lib_dir)/firrtl-interpreter.stamp
 chisel_testers_stamp=$(lib_dir)/chisel-testers.stamp
@@ -27,9 +28,9 @@ dsptools_stamp=$(lib_dir)/dsptools.stamp
 builtin_debugger_stamp=$(lib_dir)/builtin-debugger.stamp
 ipxact_jar=ipxact_2.11-1.0.jar
 ipxact_stamp=$(lib_dir)/$(ipxact_jar)
-rocket_dsp_utils_stamp=$(lib_dir)/rocket-dsp-utils.stamp
+handlebars_stamp=$(lib_dir)/handlebars.stamp
 
-all_stamps := $(firrtl_stamp) $(chisel3_stamp) $(firrtl_interpreter_stamp) $(chisel_testers_stamp) $(rocketchip_stamp) $(testchipip_stamp) $(barstools_stamp) $(dsptools_stamp) $(builtin_debugger_stamp) $(ipxact_stamp) $(rocket_dsp_utils_stamp)
+all_stamps := $(firrtl_stamp) $(chisel3_stamp) $(treadle_stamp) $(firrtl_interpreter_stamp) $(chisel_testers_stamp) $(rocketchip_stamp) $(dsptools_stamp) $(testchipip_stamp) $(barstools_stamp)
 
 lookup_scala_srcs = $(shell find $(1)/ -iname "*.scala" 2> /dev/null)
 
@@ -48,40 +49,53 @@ libs: $(all_stamps)
 #####################################################
 
 $(firrtl_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/firrtl/src)
-	cd $(ROCKETCHIP_DIR)/firrtl && $(SBT) publish-local
+	cd $(ROCKETCHIP_DIR)/firrtl && $(SBT) publishLocal
 	cd $(ROCKETCHIP_DIR)/firrtl && $(SBT) assembly
 	mkdir -p ${lib_dir}
 	touch $(firrtl_stamp)
 
 $(chisel3_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/chisel3/src) $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/chisel3/chiselFrontend) $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)/chisel3/coreMacros) $(firrtl_stamp) 
-	cd $(ROCKETCHIP_DIR)/chisel3 && $(SBT) publish-local
+	cd $(ROCKETCHIP_DIR)/chisel3 && $(SBT) ++2.12.4 publishLocal
 	mkdir -p ${lib_dir}
 	touch $(chisel3_stamp)
+
+$(treadle_stamp): $(call lookup_scala_srcs, $(framework_dir)/treadle) $(firrtl_stamp)
+	mkdir -p $(lib_dir)
+	rm -rf $(framework_dir)/treadle/lib
+	ln -s $(base_dir)/lib $(framework_dir)/treadle/lib
+	cd $(framework_dir)/treadle && $(SBT) publishLocal
+	touch $@
 
 $(firrtl_interpreter_stamp): $(call lookup_scala_srcs, $(framework_dir)/firrtl-interpreter) $(firrtl_stamp)
 	mkdir -p $(lib_dir)
 	rm -rf $(framework_dir)/firrtl-interpreter/lib
 	ln -s $(base_dir)/lib $(framework_dir)/firrtl-interpreter/lib
-	cd $(framework_dir)/firrtl-interpreter && $(SBT) publish-local
+	cd $(framework_dir)/firrtl-interpreter && $(SBT) publishLocal
 	touch $@
 
-$(chisel_testers_stamp): $(call lookup_scala_srcs, $(framework_dir)/chisel-testers) $(firrtl_stamp) $(chisel3_stamp) $(firrtl_interpreter_stamp)
+$(chisel_testers_stamp): $(call lookup_scala_srcs, $(framework_dir)/chisel-testers) $(firrtl_stamp) $(chisel3_stamp) $(firrtl_interpreter_stamp) $(treadle_stamp)
 	mkdir -p $(lib_dir)
 	rm -rf $(framework_dir)/chisel-testers/lib
 	ln -s $(base_dir)/lib $(framework_dir)/chisel-testers/lib
-	cd $(framework_dir)/chisel-testers && $(SBT) publish-local
+	cd $(framework_dir)/chisel-testers && $(SBT) publishLocal
 	touch $@
 
 $(chisel_jtag_stamp): $(call lookup_scala_srcs, $(framework_dir)/chisel-jtag) $(chisel_testers_stamp)
-	cd $(framework_dir)/chisel-jtag && $(SBT) publish-local
+	cd $(framework_dir)/chisel-jtag && $(SBT) publishLocal
 	touch $@
 
 $(rocketchip_stamp): $(call lookup_scala_srcs, $(ROCKETCHIP_DIR)) $(firrtl_stamp) $(chisel3_stamp) $(firrtl_interpreter_stamp) $(chisel_testers_stamp)
-	cd $(ROCKETCHIP_DIR) && $(SBT) publish-local
-	cd $(ROCKETCHIP_DIR) && $(SBT) pack
+	cd $(ROCKETCHIP_DIR) && $(SBT) ++2.12.4 publishLocal
+	cd $(ROCKETCHIP_DIR) && $(SBT) ++2.12.4 pack
 	mkdir -p $(lib_dir)
 	cp $(ROCKETCHIP_DIR)/target/pack/lib/*.jar $(lib_dir)
 	touch $(rocketchip_stamp)
+
+$(handlebars_stamp): $(call lookup_scala_srcs, $(framework_dir)/handlebars.scala)
+	cd $(framework_dir)/handlebars.scala && $(SBT) publishLocal
+	mkdir -p ${lib_dir}
+	touch $@
+
 
 
 #####################################################
@@ -92,45 +106,35 @@ $(testchipip_stamp): $(call lookup_scala_srcs, $(framework_dir)/testchipip) $(ro
 	mkdir -p $(lib_dir)
 	rm -rf $(framework_dir)/testchipip/lib
 	ln -s $(base_dir)/lib $(framework_dir)/testchipip/lib
-	cd $(framework_dir)/testchipip && $(SBT) publish-local
+	cd $(framework_dir)/testchipip && $(SBT) publishLocal
 	touch $@
 
-$(barstools_stamp): $(call lookup_scala_srcs, $(framework_dir)/barstools) $(rocketchip_stamp)
+$(barstools_stamp): $(call lookup_scala_srcs, $(framework_dir)/barstools) $(rocketchip_stamp) $(handlebars_stamp)
 	mkdir -p $(lib_dir)
 	rm -rf $(framework_dir)/barstools/lib
 	ln -s $(base_dir)/lib $(framework_dir)/barstools/lib
-	cd $(framework_dir)/barstools && $(SBT) publish-local
+	cd $(framework_dir)/barstools && $(SBT) -Dchisel3Version=3.2-SNAPSHOT -Dchisel-iotestersVersion=1.3-SNAPSHOT -DhandlebarsVersion=2.1.2-SNAPSHOT ++2.12.6 publishLocal
 	touch $@
 
 $(dsptools_stamp): $(call lookup_scala_srcs, $(framework_dir)/dsptools) $(rocketchip_stamp)
 	mkdir -p $(lib_dir)
 	rm -rf $(framework_dir)/dsptools/lib
 	ln -s $(base_dir)/lib $(framework_dir)/dsptools/lib
-	cd $(framework_dir)/dsptools && $(SBT) publish-local
+	cd $(framework_dir)/dsptools && $(SBT) publishLocal
+	cd $(framework_dir)/dsptools && $(SBT) "project rocket-dsptools" publishLocal
 	touch $@
 
 $(builtin_debugger_stamp): $(call lookup_scala_srcs, $(framework_dir)/builtin-debugger) $(rocketchip_stamp)
 	mkdir -p $(lib_dir)
 	rm -rf $(framework_dir)/builtin-debugger/lib
 	ln -s $(base_dir)/lib $(framework_dir)/builtin-debugger/lib
-	cd $(framework_dir)/builtin-debugger && $(SBT) publish-local
+	cd $(framework_dir)/builtin-debugger && $(SBT) publishLocal
 	touch $@
 
 $(ipxact_stamp): $(framework_dir)/$(ipxact_jar)
 	mkdir -p $(lib_dir)
 	cp $(framework_dir)/$(ipxact_jar) $(ipxact_stamp)
 
-
-#####################################################
-# dsp utils depends on everything!
-#####################################################
-
-$(rocket_dsp_utils_stamp): $(call lookup_scala_srcs, $(framework_dir)/rocket-dsp-utils) $(rocketchip_stamp) $(testchipip_stamp) $(barstools_stamp) $(dsptools_stamp) $(builtin_debugger_stamp) $(ipxact_stamp) $(chisel_jtag_stamp)
-	mkdir -p $(lib_dir)
-	rm -rf $(framework_dir)/rocket-dsp-utils/lib
-	ln -s $(base_dir)/lib $(framework_dir)/rocket-dsp-utils/lib
-	cd $(framework_dir)/rocket-dsp-utils && $(SBT) publish-local
-	touch $@
 
 
 
